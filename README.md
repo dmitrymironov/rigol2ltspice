@@ -22,27 +22,38 @@ Small command-line converter for transforming Rigol oscilloscope CSV waveform ex
 - If no shift is provided and the first parsed timestamp is negative:
   - The tool auto-shifts the whole waveform so the first output time becomes `0`.
 
-## Build
+## Build and Run (Docker + Make)
 
-Use a C++ compiler with C++11 support:
+This project now builds inside a Docker container with `build-essential`.
+
+### Available Make targets
+
+- `make help` - show available targets (default).
+- `make image` - build local build image from `Dockerfile.build`.
+- `make build` - compile `rigol.cpp` into `build/rigol`.
+- `make test` - run 3 fixture-based tests using provided `test/` data.
+- `make doc` - render the PlantUML usage diagram into `build/docs/`.
+- `make clean` - remove build artifacts.
+
+### Typical workflow
 
 ```bash
-g++ -std=c++11 rigol.cpp -o rigol
+make build
+./build/rigol test/NewFile0.csv build/out.txt
+make test
 ```
 
-## Usage
+## Test Coverage (3 provided fixtures)
 
-```bash
-./rigol input.csv output.txt
-./rigol input.csv output.txt 2.5
-```
+`make test` runs these checks:
 
-Examples:
-
-- `./rigol scope.csv wave.txt`
-- `./rigol scope.csv wave.txt 1.25`
-
-In the second example, `1.25` means `1.25 ms` shift, which is applied as `0.00125 s`.
+1. `test/NewFile0.csv` auto-shift conversion:
+   - output line count is `16384`
+   - first output sample is `0.000000 1.100000`
+2. `test/NewFile0.csv` with explicit `1 ms` shift:
+   - first output sample is `-0.006272 1.100000`
+3. `test/rigol-1.csv` (already-converted two-column text, not CSV):
+   - output line count is `0` with current strict CSV parsing behavior
 
 ## Input Assumptions and Limits
 
@@ -53,14 +64,14 @@ In the second example, `1.25` means `1.25 ms` shift, which is applied as `0.0012
 
 ## PlantUML: Converter Usage Flow
 
-The repository includes a PlantUML diagram at:
+Source diagram:
 
 - `docs/rigol_usage.puml`
 
-You can render it with PlantUML, for example:
+Rendered output via Make:
 
 ```bash
-plantuml docs/rigol_usage.puml
+make doc
 ```
 
 ## License
