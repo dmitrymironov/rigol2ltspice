@@ -1,0 +1,28 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+skinparam packageStyle rectangle
+
+title rigol2ltspice - Usage and Data Flow
+
+actor User
+rectangle "rigol (CLI)" as CLI
+file "Rigol CSV\n(input)" as IN
+file "LTspice Text\n(output)" as OUT
+
+User --> CLI : run ./rigol <in.csv> <out.txt> [shift_ms]
+IN --> CLI : read CSV rows
+CLI --> CLI : skip first 2 lines
+CLI --> CLI : parse first 2 fields\n(time, value)
+CLI --> CLI : apply shift\n(explicit or auto)
+CLI --> OUT : write "time value" rows
+CLI --> User : done / status logs
+
+note right of CLI
+Shift rules:
+1) If shift_ms provided,
+   use shift_ms / 1000.
+2) Else if first time < 0,
+   shift so first output time = 0.
+end note
+@enduml
