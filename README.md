@@ -32,7 +32,7 @@ This project now builds inside a Docker container with `build-essential`.
 - `make image` - build local build image from `Dockerfile.build`.
 - `make build` - compile `rigol.cpp` into `build/rigol`.
 - `make test` - run 3 fixture-based tests using provided `test/` data.
-- `make doc` - render the PlantUML usage diagram into `build/docs/`.
+- `make doc` - render the PlantUML usage diagram into `build/docs/` as text and PNG.
 - `make clean` - remove build artifacts.
 
 ### Typical workflow
@@ -73,6 +73,11 @@ Rendered output via Make:
 ```bash
 make doc
 ```
+
+This generates:
+
+- `build/docs/rigol_usage.atxt`
+- `build/docs/rigol_usage.png`
 
 ## License
 

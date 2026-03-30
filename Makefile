@@ -16,7 +16,7 @@ help:
 	@echo "  make help   - Show this help"
 	@echo "  make image  - Build local Docker image with build-essential"
 	@echo "  make build  - Build converter into build/rigol using Docker"
-	@echo "  make doc    - Render PlantUML diagram into build/docs using Docker"
+	@echo "  make doc    - Render PlantUML diagram (.atxt + .png) into build/docs"
 	@echo "  make test   - Build and run 3 fixture-based tests"
 	@echo "  make clean  - Remove build artifacts"
 
@@ -45,7 +45,16 @@ doc: | $(DOC_BUILD_DIR)
 		-w /work \
 		plantuml/plantuml:latest \
 		-ttxt /work/$(DOC_DIR)/rigol_usage.puml -o /work/$(DOC_BUILD_DIR)
+	@docker run --rm \
+		-u "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp \
+		-e JAVA_TOOL_OPTIONS=-Duser.home=/tmp \
+		-v "$$(pwd)":/work \
+		-w /work \
+		plantuml/plantuml:latest \
+		-tpng /work/$(DOC_DIR)/rigol_usage.puml -o /work/$(DOC_BUILD_DIR)
 	@echo "Generated $(DOC_BUILD_DIR)/rigol_usage.atxt"
+	@echo "Generated $(DOC_BUILD_DIR)/rigol_usage.png"
 
 $(DOC_BUILD_DIR):
 	@mkdir -p $(DOC_BUILD_DIR)
